@@ -1,4 +1,25 @@
+CXX=g++
+AR=ar
 
-all:
-	mkdir -p bin
-	g++ -I /usr/local/include/freetype2 -I /usr/include/freetype2 -I artery-font-format -I msdfgen/include -I msdfgen -D MSDFGEN_USE_CPP11 -D MSDF_ATLAS_STANDALONE -std=c++11 -pthread -O2 -o bin/msdf-atlas-gen msdfgen/core/*.cpp msdfgen/lib/*.cpp msdfgen/ext/*.cpp msdf-atlas-gen/*.cpp -lfreetype
+CFLAGS=-std=c++11 -Imsdf-atlas-gen/ -Imsdfgen/ -Imsdfgen/include/ -D_CRT_SECURE_NO_WARNINGS
+STATICS=msdfgen/bin/libmsdfgen.a msdfgen/freetype/objs/freetype.a
+
+DIRS := msdf-atlas-gen
+
+SRC := $(wildcard $(addsuffix /*.cpp, $(DIRS)))
+OBJ := $(patsubst %.cpp,bin/%.o,$(SRC))
+
+LIBRARY := bin/libmsdf-atlas-gen.a
+
+all: msdfgen/bin/libmsdfngen.a $(LIBRARY)
+
+$(LIBRARY): $(OBJ)
+	echo $(SRC)
+	$(AR) rcs $@ $^
+
+bin/%.o: %.cpp
+	if not exist bin/msdf-atlas-gen/ mkdir bin\msdf-atlas-gen
+	$(CXX) $(CFLAGS) -c $< -o $@ $(STATICS)
+
+msdfgen/bin/libmsdfngen.a:
+	$(MAKE) -C msdfgen/
